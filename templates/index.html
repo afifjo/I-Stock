@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+{% block title %}IWATCH-INV{% endblock %}
+
+{% block content %}
+
+<h1 class="text-3xl font-bold mb-8 text-lightSkyBlue">IWATCH-INV</h1>
+
+<!-- Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Total Items -->
+    <div class="glass-card p-6 rounded-xl relative overflow-hidden group hover:bg-white/5 transition-all duration-300">
+        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <i class="bi bi-box-seam text-6xl text-lightSkyBlue"></i>
+        </div>
+        <h3 class="text-gray-400 text-sm font-medium uppercase tracking-wider">Total Articles</h3>
+        <p class="text-4xl font-bold text-white mt-2">{{ total_items }}</p>
+        <div class="mt-4 flex items-center gap-2 text-sm text-lightSkyBlue">
+            <i class="bi bi-graph-up"></i>
+            <span>Inventaire actif</span>
+        </div>
+    </div>
+
+    <!-- Low Stock -->
+    <div class="glass-card p-6 rounded-xl relative overflow-hidden group hover:bg-white/5 transition-all duration-300">
+        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <i class="bi bi-exclamation-triangle text-6xl text-coralRed"></i>
+        </div>
+        <h3 class="text-gray-400 text-sm font-medium uppercase tracking-wider">Stock Faible</h3>
+        <p class="text-4xl font-bold text-white mt-2">{{ low_stock_count }}</p>
+        <div class="mt-4 flex items-center gap-2 text-sm text-coralRed">
+            <i class="bi bi-arrow-down-circle"></i>
+            <span>Action requise</span>
+        </div>
+    </div>
+
+    <!-- Quick Action -->
+    <div
+        class="glass-card p-6 rounded-xl relative overflow-hidden group hover:bg-white/5 transition-all duration-300 flex flex-col justify-center items-center text-center">
+        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <i class="bi bi-lightning text-6xl text-aquaTeal"></i>
+        </div>
+        <a href="{{ url_for('main.add') }}"
+            class="w-full h-full flex flex-col items-center justify-center gap-3 group-hover:scale-105 transition-transform">
+            <div
+                class="w-12 h-12 rounded-full bg-gradient-to-tr from-lightSkyBlue to-aquaTeal flex items-center justify-center shadow-lg">
+                <i class="bi bi-plus-lg text-xl text-white"></i>
+            </div>
+            <span class="font-semibold text-white">Ajouter un article</span>
+        </a>
+    </div>
+</div>
+
+<!-- Tableau d'inventaire -->
+<div class="overflow-x-auto bg-darkIndigo/50 backdrop-blur-sm rounded-xl shadow-lg border border-gray-700/50">
+    <table class="w-full text-left border-collapse text-gray-200">
+        <thead class="bg-deepNavy/80 text-aquaTeal border-b border-gray-700/50 uppercase text-xs tracking-wider">
+            <tr>
+                <th class="px-6 py-4 font-semibold">Article</th>
+                <th class="px-6 py-4 font-semibold">Description</th>
+                <th class="px-6 py-4 font-semibold">Catégorie</th>
+                <th class="px-6 py-4 font-semibold">Quantité</th>
+                <th class="px-6 py-4 font-semibold">Assigné à</th>
+                <th class="px-6 py-4 font-semibold text-right">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for item in items.items %}
+            <tr class="border-b border-gray-700/50 hover:bg-white/5 transition-all duration-200 group">
+
+                <!-- ITEM + IMAGE -->
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-4">
+                        {% if item.image_filename %}
+                        <img src="{{ url_for('static', filename='uploads/' ~ item.image_filename) }}" alt="thumb"
+                            class="w-12 h-12 object-cover rounded-lg border border-gray-600 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                        {% else %}
+                        <div
+                            class="w-12 h-12 bg-gray-700/50 border border-gray-600 rounded-lg flex items-center justify-center text-gray-400 group-hover:scale-110 transition-transform duration-300">
+                            <i class="bi bi-image"></i>
+                        </div>
+                        {% endif %}
+
+                        <div>
+                            <a href="{{ url_for('main.view', item_id=item.id) }}"
+                                class="font-semibold text-lightSkyBlue hover:text-aquaTeal hover:underline text-sm block mb-1">
+                                {{ item.name }}
+                            </a>
+
+                            <p class="text-xs text-gray-500">
+                                {{ item.created_at.strftime('%d %b %Y') }}
+                            </p>
+                        </div>
+                    </div>
+                </td>
+
+                <!-- DESCRIPTION -->
+                <td class="px-6 py-4 text-sm text-gray-400 description-cell" title="{{ item.description }}">
+                    {{ item.description }}
+                </td>
+
+                <!-- CATEGORY -->
+                <td class="px-6 py-4">
+                    {% if item.category %}
+                    <span
+                        class="text-xs px-2.5 py-1 rounded-full bg-deepNavy border border-gray-600 text-lightLavender font-medium">
+                        {{ item.category }}
+                    </span>
+                    {% else %}
+                    <span class="text-xs text-gray-600 italic">Non classé</span>
+                    {% endif %}
+                </td>
+
+                <!-- QUANTITY -->
+                <td class="px-6 py-4">
+                    {% if item.quantity < low_stock_threshold %} <div class="flex flex-col items-start gap-1">
+                        <span class="text-coralRed font-bold text-base">{{ item.quantity }}</span>
+                        <span
+                            class="text-[10px] uppercase tracking-wide text-white bg-coralRed/80 px-2 py-0.5 rounded-full shadow-sm animate-pulse">
+                            Stock faible
+                        </span>
+</div>
+{% else %}
+<span class="text-sm text-tealGreen font-bold bg-tealGreen/10 px-3 py-1 rounded-full border border-tealGreen/20">{{
+    item.quantity }}</span>
+{% endif %}
+</td>
+
+<!-- ASSIGNED TO -->
+<td class="px-6 py-4 text-sm text-gray-300">
+    {% if item.assigned_to %}
+    <div class="flex items-center gap-2">
+        <div
+            class="w-6 h-6 rounded-full bg-gradient-to-br from-violet to-mediumPurple flex items-center justify-center text-[10px] text-white font-bold">
+            {{ item.assigned_to[:1] }}
+        </div>
+        <span>{{ item.assigned_to }}</span>
+    </div>
+    {% else %}
+    <span class="text-gray-600">—</span>
+    {% endif %}
+</td>
+
+<!-- ACTIONS -->
+<td class="px-6 py-4 text-right">
+    <div class="inline-flex items-center gap-2 opacity-80 group-hover:opacity-100 transition-opacity">
+
+        <!-- VOIR -->
+        <a href="{{ url_for('main.view', item_id=item.id) }}"
+            class="p-2 text-violet hover:text-white hover:bg-violet rounded-lg transition-all duration-200"
+            title="Voir les détails">
+            <i class="bi bi-eye-fill"></i>
+        </a>
+
+        <!-- MODIFIER -->
+        <a href="{{ url_for('main.edit', item_id=item.id) }}"
+            class="p-2 text-softOrange hover:text-deepNavy hover:bg-softOrange rounded-lg transition-all duration-200"
+            title="Modifier">
+            <i class="bi bi-pencil-fill"></i>
+        </a>
+
+        <!-- SUPPRIMER -->
+        <form method="POST" action="{{ url_for('main.delete', item_id=item.id) }}" class="inline">
+            <button onclick="return confirm('Supprimer cet article ?')"
+                class="p-2 text-coralRed hover:text-white hover:bg-coralRed rounded-lg transition-all duration-200"
+                title="Supprimer">
+                <i class="bi bi-trash3-fill"></i>
+            </button>
+        </form>
+
+    </div>
+</td>
+
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+
+<!-- PAGINATION -->
+<div class="flex justify-center items-center gap-4 mt-8 text-gray-400 text-sm">
+    {% if items.has_prev %}
+    <a href="{{ url_for('main.index', page=items.prev_num) }}"
+        class="hover:text-lightSkyBlue hover:underline">Précédent</a>
+    {% else %}
+    <span class="text-gray-600">Précédent</span>
+    {% endif %}
+
+    <span class="font-semibold text-lightLavender">Page {{ items.page }} / {{ items.pages }}</span>
+
+    {% if items.has_next %}
+    <a href="{{ url_for('main.index', page=items.next_num) }}"
+        class="hover:text-lightSkyBlue hover:underline">Suivant</a>
+    {% else %}
+    <span class="text-gray-600">Suivant</span>
+    {% endif %}
+</div>
+
+{% endblock %}

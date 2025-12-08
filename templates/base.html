@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title or "IWATCH-INV" }}</title>
+
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        deepNavy: '#191D3A',
+                        darkIndigo: '#2B2B4B',
+                        lightSkyBlue: '#5C99CE',
+                        aquaTeal: '#6DC4B2',
+                        tealGreen: '#58AAA7',
+                        violet: '#6962A2',
+                        mediumPurple: '#A05FA4',
+                        lightLavender: '#A499CD',
+                        pinkMagenta: '#D15A9F',
+                        brightMagenta: '#DE2F8C',
+                        hotPink: '#DA2375',
+                        darkMagenta: '#9B2764',
+                        vividOrange: '#EB5F34',
+                        coralRed: '#EC5D52',
+                        softOrange: '#ED955F',
+                        lightPeach: '#FAAB92',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="text-gray-100 min-h-screen flex flex-col selection:bg-lightSkyBlue selection:text-deepNavy relative">
+
+    <!-- Floating Background Icons -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+        <i class="bi bi-box-seam floating-icon text-9xl" style="top: 10%; left: 5%; animation-duration: 8s;"></i>
+        <i class="bi bi-clipboard-data floating-icon text-8xl"
+            style="top: 70%; left: 15%; animation-duration: 10s; animation-delay: 1s;"></i>
+        <i class="bi bi-tags floating-icon text-9xl"
+            style="top: 20%; right: 10%; animation-duration: 9s; animation-delay: 2s;"></i>
+        <i class="bi bi-laptop floating-icon text-8xl"
+            style="bottom: 10%; right: 5%; animation-duration: 11s; animation-delay: 0.5s;"></i>
+        <i class="bi bi-tools floating-icon text-7xl"
+            style="top: 50%; left: 50%; animation-duration: 12s; animation-delay: 3s;"></i>
+        <i class="bi bi-display floating-icon text-8xl"
+            style="bottom: 30%; left: 5%; animation-duration: 9.5s; animation-delay: 1.5s;"></i>
+        <i class="bi bi-qr-code floating-icon text-8xl"
+            style="top: 15%; left: 40%; animation-duration: 10.5s; animation-delay: 2.5s;"></i>
+        <i class="bi bi-hdd-network floating-icon text-8xl"
+            style="bottom: 20%; right: 30%; animation-duration: 11.5s; animation-delay: 4s;"></i>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav class="glass-nav sticky top-0 z-50 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+
+            <!-- Logo + App Name -->
+            <a href="{{ url_for('main.index') }}" class="flex items-center gap-3 group">
+
+                <div class="flex flex-col justify-center">
+                    <img src="{{ url_for('static', filename='main_logo.png') }}?v=2" alt="I-NVENTORY Logo"
+                        class="h-24 w-auto object-contain transition-transform duration-300 hover:scale-105 drop-shadow-[0_0_8px_rgba(255,255,255,0.6)] brightness-110">
+                </div>
+            </a>
+
+            <div class="flex items-center gap-6 text-sm font-medium tracking-wide flex-1 relative">
+
+                {% if current_user.is_authenticated %}
+
+                <!-- Liens de navigation principaux (Flexibilité pour éviter les chevauchements) -->
+                <div class="hidden md:flex items-center gap-6 flex-1 justify-center whitespace-nowrap px-4">
+                    <a href="{{ url_for('main.index') }}"
+                        class="relative px-2 py-1 hover:text-aquaTeal transition-colors duration-300 after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-0.5 after:bg-aquaTeal after:transition-all after:duration-300 hover:after:w-full">Accueil</a>
+                    <a href="{{ url_for('main.staff_list') }}"
+                        class="relative px-2 py-1 hover:text-aquaTeal transition-colors duration-300 after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-0.5 after:bg-aquaTeal after:transition-all after:duration-300 hover:after:w-full">Personnel</a>
+                    <a href="{{ url_for('main.search') }}"
+                        class="relative px-2 py-1 hover:text-aquaTeal transition-colors duration-300 after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-0.5 after:bg-aquaTeal after:transition-all after:duration-300 hover:after:w-full">Recherche</a>
+                    <a href="{{ url_for('reports.global_report') }}"
+                        class="relative px-2 py-1 hover:text-aquaTeal transition-colors duration-300 after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-0.5 after:bg-aquaTeal after:transition-all after:duration-300 hover:after:w-full">Rapports</a>
+                    <a href="{{ url_for('dashboard.home') }}"
+                        class="relative px-2 py-1 hover:text-aquaTeal transition-colors duration-300 after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-0.5 after:bg-aquaTeal after:transition-all after:duration-300 hover:after:w-full whitespace-nowrap">Tableau
+                        de bord</a>
+
+                    {% if current_user.role == 'admin' %}
+                    <a href="{{ url_for('main.admin_users') }}"
+                        class="text-vividOrange hover:text-softOrange transition-colors duration-300 flex items-center gap-1">
+                        <i class="bi bi-shield-lock"></i> Admin
+                    </a>
+                    {% endif %}
+                </div>
+
+                <!-- Groupe d'actions droite (Bouton + Avatar) -->
+                <div class="flex items-center gap-4 ml-auto z-10">
+                    <div class="hidden md:flex items-center">
+                        <a href="{{ url_for('main.add') }}"
+                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-lightSkyBlue to-blue-500 text-white font-semibold rounded-full hover:shadow-[0_0_20px_rgba(92,153,206,0.5)] hover:-translate-y-0.5 transition-all duration-300 transform whitespace-nowrap">
+                            <i class="bi bi-plus-lg"></i> Ajouter un article
+                        </a>
+                    </div>
+
+                    <!-- Avatar Dropdown -->
+                    <div class="relative" id="user-menu-wrapper">
+                        <!-- Avatar Dropdown -->
+                        <div class="relative" id="user-menu-wrapper">
+                            <!-- Avatar Button -->
+                            <button id="user-menu-btn"
+                                class="flex items-center justify-center focus:outline-none group">
+                                <div
+                                    class="p-0.5 rounded-full bg-gradient-to-tr from-lightSkyBlue to-pinkMagenta group-hover:shadow-[0_0_15px_rgba(209,90,159,0.5)] transition-all duration-300">
+                                    <div
+                                        class="bg-deepNavy rounded-full p-1 relative overflow-hidden h-10 w-10 min-w-[2.5rem] flex items-center justify-center">
+                                        <img src="{{ url_for('static', filename='avatars/' ~ (current_user.avatar or 'default.png')) }}"
+                                            alt="Avatar"
+                                            class="w-full h-full rounded-full object-cover border border-white/10">
+                                    </div>
+                                </div>
+                            </button>
+
+                            <!-- Dropdown Menu -->
+                            <div id="user-menu"
+                                class="absolute right-0 mt-4 w-56 glass-card text-gray-200 shadow-2xl rounded-xl hidden opacity-0 transform scale-95 origin-top-right transition-all duration-200 z-50 overflow-hidden">
+
+                                <div class="px-4 py-3 border-b border-gray-700/50 bg-white/5">
+                                    <p class="text-xs text-gray-400 uppercase tracking-wider">Signed in as</p>
+                                    <p class="text-sm font-semibold text-white truncate">{{ current_user.username }}</p>
+                                </div>
+
+                                <div class="py-1">
+                                    <a href="{{ url_for('profile.view_profile') }}"
+                                        class="flex items-center gap-3 px-4 py-2.5 hover:bg-white/10 hover:text-aquaTeal transition-colors">
+                                        <i class="bi bi-person"></i> Profile
+                                    </a>
+
+                                    <a href="{{ url_for('profile.change_password') }}"
+                                        class="flex items-center gap-3 px-4 py-2.5 hover:bg-white/10 hover:text-aquaTeal transition-colors">
+                                        <i class="bi bi-key"></i> Change Password
+                                    </a>
+                                </div>
+
+                                <div class="border-t border-gray-700/50 py-1">
+                                    <a href="{{ url_for('auth.logout') }}"
+                                        class="flex items-center gap-3 px-4 py-2.5 text-coralRed hover:bg-coralRed/10 transition-colors">
+                                        <i class="bi bi-box-arrow-right"></i> Logout
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    {% else %}
+                    <div class="flex items-center gap-4 ml-auto">
+                        <a href="{{ url_for('auth.login') }}"
+                            class="px-5 py-2 text-gray-200 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20 rounded-full transition-all duration-300 font-semibold">
+                            Se connecter
+                        </a>
+                        <a href="{{ url_for('auth.register') }}"
+                            class="px-6 py-2 bg-gradient-to-r from-lightSkyBlue to-blue-500 text-white border border-transparent rounded-full hover:shadow-[0_0_15px_rgba(92,153,206,0.5)] hover:-translate-y-0.5 transition-all duration-300 font-semibold shadow-lg">
+                            S'inscrire
+                        </a>
+                    </div>
+                    {% endif %}
+
+                </div>
+            </div>
+    </nav>
+
+    <!-- FLASH MESSAGES -->
+    <div class="max-w-4xl mx-auto mt-8 px-4 animate-slide-up">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        {% set bg_color =
+        'bg-tealGreen/90 border-tealGreen' if category == 'success' else
+        'bg-coralRed/90 border-coralRed' if category == 'danger' else
+        'bg-vividOrange/90 border-vividOrange' if category == 'warning' else
+        'bg-lightSkyBlue/90 border-lightSkyBlue' %}
+
+        <div
+            class="{{ bg_color }} backdrop-blur-sm border text-white px-6 py-4 mb-4 rounded-xl shadow-lg flex items-center gap-4 transform hover:scale-[1.01] transition-transform duration-300">
+            {% if category == 'success' %} <div class="bg-white/20 p-2 rounded-full"><i
+                    class="bi bi-check-lg text-xl"></i></div>
+            {% elif category == 'danger' %} <div class="bg-white/20 p-2 rounded-full"><i
+                    class="bi bi-exclamation-triangle-fill text-xl"></i></div>
+            {% elif category == 'warning' %} <div class="bg-white/20 p-2 rounded-full"><i
+                    class="bi bi-exclamation-circle-fill text-xl"></i></div>
+            {% else %} <div class="bg-white/20 p-2 rounded-full"><i class="bi bi-info-circle-fill text-xl"></i></div>
+            {% endif %}
+            <span class="font-medium tracking-wide">{{ message }}</span>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="max-w-7xl mx-auto py-8 px-6 flex-grow w-full animate-fade-in">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="text-center text-gray-400 py-8 mt-auto border-t border-white/5 bg-black/20 backdrop-blur-sm">
+        <p class="text-sm">
+            © {{ current_year or 2025 }} <span class="text-lightSkyBlue font-semibold tracking-wide">IWATCH-INV</span>.
+            All rights reserved.
+        </p>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top"
+        class="fixed bottom-8 right-8 p-3 bg-lightSkyBlue text-white rounded-full shadow-lg opacity-0 invisible transition-all duration-300 hover:bg-aquaTeal hover:-translate-y-1 z-50">
+        <i class="bi bi-arrow-up text-xl"></i>
+    </button>
+
+    <!-- DROPDOWN & UI SCRIPTS -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // Dropdown Logic
+            const btn = document.getElementById("user-menu-btn");
+            const menu = document.getElementById("user-menu");
+
+            if (btn && menu) {
+                btn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    menu.classList.toggle("hidden");
+                    setTimeout(() => {
+                        menu.classList.toggle("opacity-0");
+                        menu.classList.toggle("scale-95");
+                    }, 10);
+                });
+
+                document.addEventListener("click", (e) => {
+                    if (!menu.contains(e.target) && !btn.contains(e.target)) {
+                        menu.classList.add("opacity-0", "scale-95");
+                        setTimeout(() => {
+                            menu.classList.add("hidden");
+                        }, 200);
+                    }
+                });
+            }
+
+            // Back to Top Logic
+            const backToTopBtn = document.getElementById("back-to-top");
+
+            window.addEventListener("scroll", () => {
+                if (window.scrollY > 300) {
+                    backToTopBtn.classList.remove("opacity-0", "invisible");
+                } else {
+                    backToTopBtn.classList.add("opacity-0", "invisible");
+                }
+            });
+
+            backToTopBtn.addEventListener("click", () => {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            });
+
+        });
+    </script>
+
+    {% block scripts %}{% endblock %}
+
+</body>
+
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Fiche membre du personnel</title>
+    <style>
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 11px;
+            color: #111827;
+        }
+
+        .header,
+        .footer {
+            width: 100%;
+            text-align: center;
+        }
+
+        .header-table {
+            width: 100%;
+        }
+
+        .header-table td {
+            vertical-align: middle;
+        }
+
+        .title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1d4ed8;
+        }
+
+        .card {
+            border: 1px solid #e5e7eb;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        table.data {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5px;
+        }
+
+        table.data th,
+        table.data td {
+            border: 1px solid #d1d5db;
+            padding: 4px 6px;
+            font-size: 10px;
+        }
+
+        table.data th {
+            background-color: #111827;
+            color: #e5e7eb;
+        }
+
+        .muted {
+            color: #6b7280;
+            font-size: 9px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- En-tête avec logos -->
+    <div class="header">
+        <table class="header-table">
+            <tr>
+                <td style="text-align:left; width:25%">
+                    <img src="{{ url_for('static', filename='logos/logo1.png') }}" alt="Logo 1" height="40">
+                </td>
+                <td style="text-align:center; width:50%">
+                    <div class="title">Fiche membre du personnel</div>
+                </td>
+                <td style="text-align:right; width:25%">
+                    <img src="{{ url_for('static', filename='logos/logo2.jpg') }}" alt="Logo 2" height="40">
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="card">
+        <div class="section-title">Informations personnelles</div>
+        <p><strong>Nom complet :</strong> {{ staff.name }}</p>
+        <p><strong>Email :</strong> {{ staff.email or "—" }}</p>
+        <p><strong>Téléphone :</strong> {{ staff.phone or "—" }}</p>
+        <p><strong>Fonction :</strong> {{ staff.position or "—" }}</p>
+        <p><strong>Département :</strong> {{ staff.department or "—" }}</p>
+    </div>
+
+    <div class="card">
+        <div class="section-title">Matériel attribué</div>
+
+        {% if items %}
+        <table class="data">
+            <thead>
+                <tr>
+                    <th>Article</th>
+                    <th>Catégorie</th>
+                    <th>N° de série</th>
+                    <th>Code de référence</th>
+                    <th>Quantité</th>
+                    <th>Date d'affectation</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.category or "—" }}</td>
+                    <td>{{ item.serial_number or "—" }}</td>
+                    <td>{{ item.reference_code or "—" }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{% if item.assigned_date %}{{ item.assigned_date.strftime('%Y-%m-%d') }}{% else %}—{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="muted">Aucun matériel n'est actuellement attribué à ce membre du personnel.</p>
+        {% endif %}
+    </div>
+
+    <p class="muted">Rapport généré le {{ date.strftime('%d/%m/%Y %H:%M') }}.</p>
+
+    <div class="footer muted">
+        IWATCH-INV &mdash; Synthèse du matériel par membre du personnel
+    </div>
+
+</body>
+
+</html>

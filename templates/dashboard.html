@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1 class="text-3xl font-bold mb-8 text-lightSkyBlue">📊 Dashboard Overview</h1>
+
+<!-- Stats Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+
+    <!-- Total Items -->
+    <div class="bg-darkIndigo p-6 rounded-xl shadow-lg border border-gray-700">
+        <h3 class="text-gray-400 text-lg">Total Items</h3>
+        <p class="text-4xl font-bold text-lightSkyBlue">{{ total_items }}</p>
+    </div>
+
+    <!-- Low Stock -->
+    <div class="bg-darkIndigo p-6 rounded-xl shadow-lg border border-gray-700">
+        <h3 class="text-gray-400 text-lg">Low Stock Items</h3>
+        <p class="text-4xl font-bold text-coralRed">{{ low_stock|length }}</p>
+    </div>
+
+</div>
+
+<!-- Latest Items -->
+<div class="bg-darkIndigo p-6 rounded-xl shadow-lg border border-gray-700">
+    <h3 class="text-xl font-semibold mb-4 text-lightLavender">Recently Added Items</h3>
+
+    <table class="w-full text-left text-gray-200">
+        <thead>
+            <tr class="border-b border-gray-600 text-gray-400">
+                <th class="py-2">Name</th>
+                <th>Qty</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for item in latest_items %}
+            <tr class="border-b border-gray-700 hover:bg-deepNavy transition">
+                <td class="py-3 text-lightSkyBlue font-medium">{{ item.name }}</td>
+                <td class="py-3 text-tealGreen font-semibold">{{ "{:,}".format(item.quantity) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

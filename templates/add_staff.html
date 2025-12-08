@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+<h1 class="text-3xl font-bold text-lightSkyBlue mb-8">{{ title }}</h1>
+
+<div class="max-w-xl mx-auto glass-card p-8 rounded-xl shadow-2xl relative overflow-hidden">
+
+    <!-- Decorative background blur -->
+    <div class="absolute -top-20 -right-20 w-64 h-64 bg-lightSkyBlue/10 rounded-full blur-3xl pointer-events-none">
+    </div>
+    <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-pinkMagenta/10 rounded-full blur-3xl pointer-events-none">
+    </div>
+
+    <form method="POST" class="relative z-10">
+        {{ form.hidden_tag() }}
+
+        <!-- Name -->
+        <label class="block font-medium text-gray-300 mb-1">Nom complet</label>
+        {{ form.name(class="w-full bg-black/20 border border-white/10 text-white rounded-lg px-4 py-2.5 mb-5
+        focus:outline-none focus:border-lightSkyBlue focus:ring-1 focus:ring-lightSkyBlue transition-colors") }}
+
+        <!-- Email -->
+        <label class="block font-medium text-gray-300 mb-1">Email</label>
+        {{ form.email(class="w-full bg-black/20 border border-white/10 text-white rounded-lg px-4 py-2.5 mb-5
+        focus:outline-none focus:border-lightSkyBlue focus:ring-1 focus:ring-lightSkyBlue transition-colors") }}
+
+        <!-- Phone -->
+        <label class="block font-medium text-gray-300 mb-1">Numéro de téléphone</label>
+        {{ form.phone(class="w-full bg-black/20 border border-white/10 text-white rounded-lg px-4 py-2.5 mb-5
+        focus:outline-none focus:border-lightSkyBlue focus:ring-1 focus:ring-lightSkyBlue transition-colors") }}
+
+        <!-- Position -->
+        <label class="block font-medium text-gray-300 mb-1">Fonction / Rôle</label>
+        {{ form.position(class="w-full bg-black/20 border border-white/10 text-white rounded-lg px-4 py-2.5 mb-5
+        focus:outline-none focus:border-lightSkyBlue focus:ring-1 focus:ring-lightSkyBlue transition-colors") }}
+
+        <!-- Department -->
+        <label class="block font-medium text-gray-300 mb-1">Département</label>
+        {{ form.department(class="w-full bg-black/20 border border-white/10 text-white rounded-lg px-4 py-2.5 mb-5
+        focus:outline-none focus:border-lightSkyBlue focus:ring-1 focus:ring-lightSkyBlue transition-colors") }}
+
+        <!-- Submit Button -->
+        <button
+            class="w-full bg-gradient-to-r from-lightSkyBlue to-blue-600 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
+            Ajouter un membre du personnel
+            {{ form.submit.label.text }}
+        </button>
+
+    </form>
+
+</div>
+
+<style>
+    /* Force dark background for select options to match the theme */
+    select option {
+        background-color: #191D3A;
+        /* deepNavy */
+        color: white;
+    }
+</style>
+
+{% endblock %}

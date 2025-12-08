@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+
+<div class="max-w-xl mx-auto bg-white shadow p-8 rounded-xl">
+
+    <h1 class="text-3xl font-bold mb-6">Edit Profile</h1>
+
+    <form method="POST">
+
+        <!-- Username -->
+        <label class="block font-medium">Username</label>
+        <input type="text" name="username" value="{{ user.username }}"
+               class="w-full border rounded px-4 py-2 mb-4">
+
+        <!-- Email -->
+        <label class="block font-medium">Email</label>
+        <input type="email" name="email" value="{{ user.email }}"
+               class="w-full border rounded px-4 py-2 mb-4">
+
+        <!-- Bio -->
+        <label class="block font-medium">Bio</label>
+
+        <textarea 
+            name="bio"
+            maxlength="300"
+            rows="3"
+            class="w-full border rounded px-4 py-2 mb-1 resize-none"
+            placeholder="Write something about yourself (max 300 characters)"
+        >{{ user.bio or '' }}</textarea>
+
+        <p id="bio-counter" class="text-sm text-gray-500 mb-5">
+            0 / 300 characters
+        </p>
+
+        <!-- Save Button -->
+        <button class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+            Save Changes
+        </button>
+
+    </form>
+
+</div>
+
+<!-- Scripts -->
+<script>
+    const bio = document.querySelector("textarea[name='bio']");
+    const counter = document.getElementById("bio-counter");
+
+    // AUTO RESIZE TEXTAREA
+    function autoResize() {
+        bio.style.height = 'auto';
+        bio.style.height = bio.scrollHeight + 'px';
+    }
+
+    // COUNTER + WARNING
+    function updateCounter() {
+        const length = bio.value.length;
+        counter.textContent = `${length} / 300 characters`;
+
+        if (300 - length <= 10) {
+            counter.classList.add("text-red-600", "font-semibold");
+        } else {
+            counter.classList.remove("text-red-600", "font-semibold");
+        }
+    }
+
+    bio.addEventListener("input", () => {
+        updateCounter();
+        autoResize();
+    });
+
+    // Initialize on load
+    updateCounter();
+    autoResize();
+</script>
+
+{% endblock %}

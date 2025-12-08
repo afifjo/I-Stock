@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Membres du personnel{% endblock %}
+
+{% block content %}
+
+<div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold text-lightSkyBlue">Membres du personnel</h1>
+    <a href="{{ url_for('main.add_staff') }}"
+        class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-lightSkyBlue to-blue-500 text-white font-semibold rounded-full hover:shadow-[0_0_20px_rgba(92,153,206,0.5)] hover:-translate-y-0.5 transition-all duration-300 transform">
+        <i class="bi bi-person-plus-fill"></i> Ajouter un membre
+    </a>
+</div>
+
+<div class="overflow-x-auto bg-darkIndigo/50 backdrop-blur-sm rounded-xl shadow-lg border border-gray-700/50">
+    <table class="w-full text-left border-collapse text-gray-200">
+        <thead class="bg-deepNavy/80 text-aquaTeal border-b border-gray-700/50 uppercase text-xs tracking-wider">
+            <tr>
+                <th class="px-6 py-4 font-semibold">Nom</th>
+                <th class="px-6 py-4 font-semibold">Contact</th>
+                <th class="px-6 py-4 font-semibold">Fonction</th>
+                <th class="px-6 py-4 font-semibold">Département</th>
+                <th class="px-6 py-4 font-semibold text-right">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for staff in staff_members %}
+            <tr class="border-b border-gray-700/50 hover:bg-white/5 transition-all duration-200 group">
+
+                <!-- Name -->
+                <td class="px-6 py-4 font-medium text-lightSkyBlue">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-8 h-8 rounded-full bg-gradient-to-br from-lightSkyBlue to-blue-500 flex items-center justify-center text-white font-bold text-xs shadow-md">
+                            {{ staff.name[:2].upper() }}
+                        </div>
+                        {{ staff.name }}
+                    </div>
+                </td>
+
+                <!-- Contact -->
+                <td class="px-6 py-4 text-sm text-gray-400">
+                    {% if staff.email %}
+                    <div class="flex items-center gap-2 mb-1">
+                        <i class="bi bi-envelope text-aquaTeal"></i> {{ staff.email }}
+                    </div>
+                    {% endif %}
+                    {% if staff.phone %}
+                    <div class="flex items-center gap-2">
+                        <i class="bi bi-telephone text-lightLavender"></i> {{ staff.phone }}
+                    </div>
+                    {% endif %}
+                    {% if not staff.email and not staff.phone %}
+                    <span class="text-gray-600 italic">—</span>
+                    {% endif %}
+                </td>
+
+                <!-- Role -->
+                <td class="px-6 py-4 text-sm text-gray-300">
+                    {% if staff.position %}
+                    <span class="bg-white/5 px-2 py-1 rounded-md border border-white/10">{{ staff.position }}</span>
+                    {% else %}
+                    <span class="text-gray-600">—</span>
+                    {% endif %}
+                </td>
+
+                <!-- Department -->
+                <td class="px-6 py-4 text-sm text-gray-300">
+                    {{ staff.department or "—" }}
+                </td>
+
+                <!-- Actions -->
+                <td class="px-6 py-4 text-right">
+                    <div class="inline-flex items-center gap-2 opacity-80 group-hover:opacity-100 transition-opacity">
+                        <!-- Modifier -->
+                        <a href="{{ url_for('main.edit_staff', staff_id=staff.id) }}"
+                            class="p-2 text-softOrange hover:text-deepNavy hover:bg-softOrange rounded-lg transition-all duration-200"
+                            title="Modifier">
+                            <i class="bi bi-pencil-fill"></i>
+                        </a>
+
+                        <!-- Exporter (Excel / PDF) -->
+                        <div class="relative inline-block text-left group/export">
+                            <button type="button"
+                                class="p-2 text-aquaTeal hover:text-deepNavy hover:bg-aquaTeal rounded-lg transition-all duration-200"
+                                title="Exporter">
+                                <i class="bi bi-download"></i>
+                            </button>
+
+                            <!-- Dropdown (CSS Hover based for simplicity) -->
+                            <div
+                                class="absolute right-0 mt-2 w-40 bg-deepNavy border border-gray-700 rounded-xl shadow-xl hidden group-hover/export:block z-20 overflow-hidden">
+                                <a href="{{ url_for('reports.export_staff', staff_id=staff.id, format='excel') }}"
+                                    class="flex items-center gap-2 px-4 py-3 text-xs text-gray-200 hover:bg-white/10 transition-colors">
+                                    <i class="bi bi-file-earmark-excel text-tealGreen text-sm"></i> Excel (XLSX)
+                                </a>
+                                <a href="{{ url_for('reports.export_staff', staff_id=staff.id, format='pdf') }}"
+                                    class="flex items-center gap-2 px-4 py-3 text-xs text-gray-200 hover:bg-white/10 transition-colors border-t border-gray-700/50">
+                                    <i class="bi bi-file-earmark-pdf text-coralRed text-sm"></i> PDF
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Supprimer -->
+                        <form method="POST" action="{{ url_for('main.delete_staff', staff_id=staff.id) }}"
+                            class="inline">
+                            <button onclick="return confirm('Supprimer ce membre du personnel ?')"
+                                class="p-2 text-coralRed hover:text-white hover:bg-coralRed rounded-lg transition-all duration-200"
+                                title="Supprimer">
+                                <i class="bi bi-trash3-fill"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" class="px-6 py-12 text-center text-gray-400">
+                    <div class="flex flex-col items-center gap-3">
+                        <i class="bi bi-people text-4xl text-gray-600"></i>
+                        <p>Aucun membre du personnel trouvé.</p>
+                        <a href="{{ url_for('main.add_staff') }}"
+                            class="text-lightSkyBlue hover:text-aquaTeal hover:underline">Ajouter un membre</a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Ajouter un article{% endblock %}
+
+{% block content %}
+
+<h1 class="text-3xl font-bold text-lightSkyBlue mb-8">Ajouter un nouvel article</h1>
+
+<div class="max-w-xl mx-auto glass-card p-8 rounded-xl shadow-2xl relative overflow-hidden">
+
+    <!-- Decorative background blur -->
+    <div class="absolute -top-20 -right-20 w-64 h-64 bg-lightSkyBlue/10 rounded-full blur-3xl pointer-events-none">
+    </div>
+    <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-pinkMagenta/10 rounded-full blur-3xl pointer-events-none">
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="relative z-10">
+        {{ form.hidden_tag() }}
+
+        <!-- Name -->
+        <label class="block font-medium text-gray-300 mb-1">Nom</label>
+        {{ form.name(class="w-full bg-black/20 border border-white/10 text-white rounded-lg px-4 py-2.5 mb-5
+        focus:outline-none focus:border-lightSkyBlue focus:ring-1 focus:ring-lightSkyBlue transition-colors") }}
+
+        <!-- Serial Number -->
+        <label class="block font-medium text-gray-300 mb-1">Numéro de série</label>
+        {{ form.serial_number(class="w-full bg-black/20 border border-white/10 text-white rounded-lg px-4 py-2.5 mb-5
+        focus:outline-none focus:border-lightSkyBlue focus:ring-1 focus:ring-lightSkyBlue transition-colors") }}
+
+        <!-- Reference Code -->
+        <label class="block font-medium text-gray-300 mb-1">Code de référence</label>
+        {{ form.reference_code(class="w-full bg-black/20 border border-white/10 text-white rounded-lg px-4 py-2.5 mb-5
+        focus:outline-none focus:border-lightSkyBlue focus:ring-1 focus:ring-lightSkyBlue transition-colors") }}
+
+        <!-- Description -->
+        <label class="block font-medium text-gray-300 mb-1">Description</label>
+        {{ form.description(class="w-full bg-black/20 border border-white/10 text-white rounded-lg px-4 py-2.5 mb-5
+        focus:outline-none focus:border-lightSkyBlue focus:ring-1 focus:ring-lightSkyBlue transition-colors", rows="3")
+        }}
+
+        <!-- Category -->
+        <label class="block font-medium text-gray-300 mb-1">Catégorie</label>
+        {{ form.category(class="w-full bg-black/20 border border-white/10 text-white rounded-lg px-4 py-2.5 mb-5
+        focus:outline-none focus:border-lightSkyBlue focus:ring-1 focus:ring-lightSkyBlue transition-colors") }}
+
+        <!-- Quantity -->
+        <label class="block font-medium text-gray-300 mb-1">Quantité</label>
+        {{ form.quantity(class="w-full bg-black/20 border border-white/10 text-white rounded-lg px-4 py-2.5 mb-5
+        focus:outline-none focus:border-lightSkyBlue focus:ring-1 focus:ring-lightSkyBlue transition-colors") }}
+
+        <!-- Assigned To -->
+        <label class="block font-medium text-gray-300 mb-1">Assigné à (employé)</label>
+        {{ form.assigned_to(class="w-full bg-black/20 border border-white/10 text-white rounded-lg px-4 py-2.5 mb-5
+        focus:outline-none focus:border-lightSkyBlue focus:ring-1 focus:ring-lightSkyBlue transition-colors") }}
+
+        <!-- Assigned Date -->
+        <label class="block font-medium text-gray-300 mb-1">Date d'assignation</label>
+        {{ form.assigned_date(class="w-full bg-black/20 border border-white/10 text-white rounded-lg px-4 py-2.5 mb-6
+        focus:outline-none focus:border-lightSkyBlue focus:ring-1 focus:ring-lightSkyBlue transition-colors",
+        type="date") }}
+
+        <!-- Image -->
+        <label class="block font-medium text-gray-300 mb-1">Image (optionnel)</label>
+        {{ form.image(class="w-full mb-6 text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0
+        file:text-sm file:font-semibold file:bg-lightSkyBlue/10 file:text-lightSkyBlue hover:file:bg-lightSkyBlue/20")
+        }}
+
+        <!-- Submit Button -->
+        <button type="submit"
+            class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-lightSkyBlue to-blue-500 text-white font-semibold rounded-full hover:shadow-[0_0_20px_rgba(92,153,206,0.5)] hover:-translate-y-0.5 transition-all duration-300 transform">
+            <i class="bi bi-plus-lg"></i> Ajouter
+        </button>
+    </form>
+
+</div>
+
+<style>
+    /* Force dark background for select options to match the theme */
+    select option {
+        background-color: #191D3A;
+        /* deepNavy */
+        color: white;
+    }
+</style>
+
+{% endblock %}

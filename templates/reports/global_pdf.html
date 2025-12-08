@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Rapport global d'inventaire</title>
+    <style>
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 11px;
+            color: #111827;
+        }
+
+        .header,
+        .footer {
+            width: 100%;
+            text-align: center;
+        }
+
+        .header-table {
+            width: 100%;
+        }
+
+        .header-table td {
+            vertical-align: middle;
+        }
+
+        .title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1d4ed8;
+        }
+
+        .card {
+            border: 1px solid #e5e7eb;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        table.data {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5px;
+        }
+
+        table.data th,
+        table.data td {
+            border: 1px solid #d1d5db;
+            padding: 4px 6px;
+            font-size: 10px;
+        }
+
+        table.data th {
+            background-color: #111827;
+            color: #e5e7eb;
+        }
+
+        .muted {
+            color: #6b7280;
+            font-size: 9px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- En-tête avec logos -->
+    <div class="header">
+        <table class="header-table">
+            <tr>
+                <td style="text-align:left; width:25%">
+                    <img src="{{ url_for('static', filename='logos/logo1.png') }}" alt="Logo 1" height="40">
+                </td>
+                <td style="text-align:center; width:50%">
+                    <div class="title">Rapport global d'inventaire</div>
+                </td>
+                <td style="text-align:right; width:25%">
+                    <img src="{{ url_for('static', filename='logos/logo2.jpg') }}" alt="Logo 2" height="40">
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="card">
+        <p class="muted">Rapport généré le {{ date.strftime('%d/%m/%Y %H:%M') }}.</p>
+        <table class="data">
+            <thead>
+                <tr>
+                    {% for h in headers %}
+                    <th>{{ h }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data %}
+                <tr>
+                    {% for h in headers %}
+                    <td>{{ row.get(h, "") }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer muted">
+        IWATCH-INV &mdash; Rapport global sur l'état du stock
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Connexion{% endblock %}
+
+{% block content %}
+
+<h1
+    class="text-4xl font-bold mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-lightSkyBlue to-aquaTeal animate-slide-up">
+    Heureux de vous revoir</h1>
+
+<div class="max-w-md mx-auto glass-card p-8 rounded-2xl shadow-2xl animate-fade-in relative overflow-hidden group">
+
+    <!-- Decorative background blur -->
+    <div
+        class="absolute -top-10 -right-10 w-32 h-32 bg-lightSkyBlue/20 rounded-full blur-3xl group-hover:bg-lightSkyBlue/30 transition-all duration-700">
+    </div>
+    <div
+        class="absolute -bottom-10 -left-10 w-32 h-32 bg-pinkMagenta/20 rounded-full blur-3xl group-hover:bg-pinkMagenta/30 transition-all duration-700">
+    </div>
+
+    <form method="POST" class="relative z-10">
+        {{ form.hidden_tag() }}
+
+        <!-- Nom d'utilisateur -->
+        <div class="mb-5 relative">
+            <label class="block font-medium mb-2 text-gray-300 text-xs uppercase tracking-widest pl-1">Nom d'utilisateur</label>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="bi bi-person text-gray-400"></i>
+                </div>
+                {{ form.username(class="w-full border border-white/10 rounded-xl pl-10 pr-4 py-3 bg-black/20 text-white
+                placeholder-gray-500 focus:outline-none focus:border-lightSkyBlue focus:ring-1 focus:ring-lightSkyBlue
+                transition-all duration-300 backdrop-blur-sm shadow-inner") }}
+            </div>
+        </div>
+
+        <!-- Mot de passe -->
+        <div class="mb-2 relative">
+            <label class="block font-medium mb-2 text-gray-300 text-xs uppercase tracking-widest pl-1">Mot de passe</label>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="bi bi-lock text-gray-400"></i>
+                </div>
+                {{ form.password(class="w-full border border-white/10 rounded-xl pl-10 pr-4 py-3 bg-black/20 text-white
+                placeholder-gray-500 focus:outline-none focus:border-lightSkyBlue focus:ring-1 focus:ring-lightSkyBlue
+                transition-all duration-300 backdrop-blur-sm shadow-inner") }}
+            </div>
+        </div>
+
+        <div class="text-right mb-8">
+            <a href="{{ url_for('auth.forgot_password') }}"
+                class="text-xs text-gray-400 hover:text-lightSkyBlue hover:underline transition-colors">Mot de passe
+                oublié ?</a>
+        </div>
+
+        <!-- Bouton -->
+        <button
+            class="w-full bg-gradient-to-r from-lightSkyBlue via-blue-500 to-blue-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-[0_0_25px_rgba(92,153,206,0.6)] hover:-translate-y-1 transition-all duration-300 transform tracking-wide text-lg">
+            Se connecter <i class="bi bi-arrow-right ml-2"></i>
+        </button>
+    </form>
+
+    <p class="text-center text-gray-400 mt-6 relative z-10">
+        Vous n'avez pas de compte ?
+        <a href="{{ url_for('auth.register') }}"
+            class="text-lightSkyBlue hover:text-aquaTeal font-medium transition-colors">S'inscrire</a>
+    </p>
+
+</div>
+
+<!-- Logo below login box -->
+<div class="flex justify-center mt-12 animate-fade-in">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo"
+        class="h-64 w-auto object-contain drop-shadow-2xl opacity-90 hover:scale-105 transition-transform duration-500">
+</div>
+
+{% endblock %}

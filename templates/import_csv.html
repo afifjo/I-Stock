@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Import Items{% endblock %}
+
+{% block content %}
+<h1 class="text-3xl font-bold text-lightSkyBlue mb-8">Import Items from CSV</h1>
+
+<div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow">
+    <form method="POST" enctype="multipart/form-data">
+        <label class="block font-medium mb-1">CSV File</label>
+        <input type="file" name="file" accept=".csv" class="mb-4">
+        <p class="text-sm text-gray-500 mb-4">CSV should have columns: name,description,quantity,price,category (headers
+            recommended)</p>
+        <div class="flex gap-3">
+            <button class="bg-blue-600 text-white px-4 py-2 rounded">Upload</button>
+            <a href="{{ url_for('main.export_csv') }}" class="bg-gray-100 px-4 py-2 rounded hover:bg-gray-200">Download
+                current CSV</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

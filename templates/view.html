@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1 class="text-3xl font-bold mb-8 text-lightSkyBlue text-center">Détails de l'article</h1>
+
+<div class="max-w-4xl mx-auto glass-card rounded-2xl shadow-2xl border border-gray-700/50 p-8 relative overflow-hidden">
+
+    <!-- Decorative background blur -->
+    <div class="absolute -top-20 -right-20 w-64 h-64 bg-lightSkyBlue/10 rounded-full blur-3xl pointer-events-none">
+    </div>
+    <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-pinkMagenta/10 rounded-full blur-3xl pointer-events-none">
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+
+        <!-- IMAGE SECTION -->
+        <div class="flex justify-center">
+            <div
+                class="w-48 h-48 bg-deepNavy/50 border border-gray-700/50 rounded-2xl flex items-center justify-center text-gray-400 text-6xl shadow-inner overflow-hidden">
+
+                {% if item.image_filename %}
+                <img src="{{ url_for('static', filename='uploads/' ~ item.image_filename) }}"
+                    class="w-full h-full object-cover hover:scale-110 transition-transform duration-500">
+                {% else %}
+                <i class="bi bi-box-seam opacity-50"></i>
+                {% endif %}
+
+            </div>
+        </div>
+
+        <!-- DETAILS SECTION -->
+        <div class="md:col-span-2">
+
+            <div class="flex justify-between items-start">
+                <h2 class="text-3xl font-bold mb-2 text-white tracking-tight">{{ item.name }}</h2>
+                {% if item.category %}
+                <span
+                    class="px-3 py-1 bg-deepNavy/80 border border-gray-600 text-lightLavender rounded-full text-xs font-medium shadow-sm">
+                    {{ item.category }}
+                </span>
+                {% endif %}
+            </div>
+
+            <!-- DESCRIPTION -->
+            <p class="item-description mt-4 text-gray-300 leading-relaxed">
+                {{ item.description or "Aucune description disponible." }}
+            </p>
+
+            <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- QUANTITY -->
+                <div class="bg-white/5 p-3 rounded-lg border border-white/10">
+                    <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Quantité</p>
+                    {% if item.quantity <= 5 %} <div class="flex items-center gap-2">
+                        <span class="text-coralRed font-bold text-xl">{{ item.quantity }}</span>
+                        <span class="text-[10px] bg-coralRed/20 text-coralRed px-2 py-0.5 rounded-full">Stock
+                            faible</span>
+                </div>
+                {% else %}
+                <span class="text-tealGreen font-bold text-xl">{{ item.quantity }}</span>
+                {% endif %}
+            </div>
+
+            <!-- ASSIGNED TO -->
+            <div class="bg-white/5 p-3 rounded-lg border border-white/10">
+                <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Assigné à</p>
+                {% if item.assigned_to %}
+                <div class="flex items-center gap-2">
+                    <div
+                        class="w-5 h-5 rounded-full bg-gradient-to-br from-violet to-mediumPurple flex items-center justify-center text-[10px] text-white font-bold">
+                        {{ item.assigned_to[:1] }}
+                    </div>
+                    <span class="font-semibold text-white">{{ item.assigned_to }}</span>
+                </div>
+                {% else %}
+                <span class="text-gray-500 italic">Non assigné</span>
+                {% endif %}
+            </div>
+
+            <!-- SERIAL NUMBER -->
+            {% if item.serial_number %}
+            <div class="bg-white/5 p-3 rounded-lg border border-white/10">
+                <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Numéro de série</p>
+                <span class="font-mono text-white text-sm">{{ item.serial_number }}</span>
+            </div>
+            {% endif %}
+
+            <!-- REFERENCE CODE -->
+            {% if item.reference_code %}
+            <div class="bg-white/5 p-3 rounded-lg border border-white/10">
+                <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Code référence</p>
+                <span class="font-mono text-white text-sm">{{ item.reference_code }}</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- DATES -->
+        <div class="mt-4 flex flex-wrap gap-4 text-xs text-gray-500 border-t border-gray-700/50 pt-4">
+            <p>
+                <i class="bi bi-calendar-plus me-1"></i> Ajouté le {{ item.created_at.strftime("%d %B %Y") }}
+            </p>
+            {% if item.assigned_date %}
+            <p>
+                <i class="bi bi-calendar-check me-1"></i> Affecté le {{ item.assigned_date.strftime("%d %B %Y") }}
+            </p>
+            {% endif %}
+        </div>
+
+        <!-- BUTTONS -->
+        <div class="mt-8 flex flex-wrap gap-3 items-center">
+            <a href="{{ url_for('main.index') }}"
+                class="inline-flex items-center gap-2 px-4 py-2 text-sm bg-deepNavy text-gray-200 border border-gray-600 rounded-lg hover:text-aquaTeal hover:border-aquaTeal transition shadow-lg hover:shadow-xl">
+                <i class="bi bi-arrow-left"></i> Retour
+            </a>
+
+            <div class="flex-grow"></div>
+
+            <a href="{{ url_for('main.edit', item_id=item.id) }}"
+                class="inline-flex items-center gap-2 px-5 py-2 text-sm bg-softOrange text-deepNavy font-bold rounded-lg hover:bg-vividOrange transition shadow-lg hover:shadow-orange-500/20 transform hover:-translate-y-0.5">
+                <i class="bi bi-pencil-fill text-xs"></i> Modifier
+            </a>
+
+            <form method="POST" action="{{ url_for('main.delete', item_id=item.id) }}">
+                <button onclick="return confirm('Supprimer cet article ?')"
+                    class="inline-flex items-center gap-2 px-5 py-2 text-sm bg-coralRed text-white font-bold rounded-lg hover:bg-hotPink transition shadow-lg hover:shadow-red-500/20 transform hover:-translate-y-0.5">
+                    <i class="bi bi-trash3-fill text-xs"></i> Supprimer
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+</div>
+
+{% endblock %}

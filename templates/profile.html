@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block title %}Profil{% endblock %}
+
+{% block content %}
+
+<div class="max-w-4xl mx-auto glass-card p-8 rounded-2xl shadow-2xl animate-fade-in relative overflow-hidden group">
+
+    <!-- Decorative background blur -->
+    <div
+        class="absolute -top-20 -right-20 w-64 h-64 bg-lightSkyBlue/10 rounded-full blur-3xl group-hover:bg-lightSkyBlue/20 transition-all duration-700">
+    </div>
+    <div
+        class="absolute -bottom-20 -left-20 w-64 h-64 bg-pinkMagenta/10 rounded-full blur-3xl group-hover:bg-pinkMagenta/20 transition-all duration-700">
+    </div>
+
+    <!-- Header -->
+    <div class="relative z-10 flex flex-col md:flex-row items-center gap-8 mb-8">
+
+        <!-- Avatar -->
+        <div class="relative group/avatar">
+            <div
+                class="absolute -inset-1 bg-gradient-to-tr from-lightSkyBlue to-pinkMagenta rounded-full blur opacity-75 group-hover/avatar:opacity-100 transition duration-500">
+            </div>
+            <img src="{{ url_for('static', filename='avatars/' ~ user.avatar) }}"
+                class="relative w-32 h-32 rounded-full border-2 border-white/20 shadow-xl object-cover">
+        </div>
+
+        <div class="text-center md:text-left">
+            <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300">
+                {{ user.username }}</h1>
+            <p class="text-lightSkyBlue font-medium mt-1">{{ user.email }}</p>
+
+            <!-- Upload Avatar Form -->
+            <form action="{{ url_for('profile.update_avatar') }}" method="POST" enctype="multipart/form-data"
+                class="mt-4 flex flex-col md:flex-row items-center gap-3">
+                <label class="block">
+                    <span class="sr-only">Choisir une photo de profil</span>
+                    <input type="file" name="avatar" class="block w-full text-sm text-gray-400
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-full file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-lightSkyBlue/10 file:text-lightSkyBlue
+                        hover:file:bg-lightSkyBlue/20
+                        cursor-pointer focus:outline-none
+                      " />
+                </label>
+                <button
+                    class="px-4 py-2 bg-gradient-to-r from-lightSkyBlue to-blue-600 text-white text-sm font-semibold rounded-full hover:shadow-[0_0_15px_rgba(92,153,206,0.4)] hover:-translate-y-0.5 transition-all duration-300">
+                    Mettre à jour
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bio -->
+    <div class="relative z-10 mb-8 bg-black/20 rounded-xl p-6 border border-white/5 backdrop-blur-sm">
+        <h2 class="font-semibold text-lg text-gray-200 mb-2 flex items-center gap-2">
+            <i class="bi bi-card-text text-lightSkyBlue"></i> Bio
+        </h2>
+
+        {% if user.bio %}
+        <p id="bio-text" class="text-gray-300 leading-relaxed whitespace-pre-line overflow-hidden" style="
+                    display: -webkit-box;
+                    -webkit-line-clamp: 3;
+                    -webkit-box-orient: vertical;
+                    overflow-wrap: break-word;
+                    word-break: break-word;
+               ">
+            {{ user.bio }}
+        </p>
+
+        <button id="toggle-bio"
+            class="mt-3 text-lightSkyBlue hover:text-aquaTeal text-sm font-medium transition-colors">
+            Voir plus
+        </button>
+
+        {% else %}
+        <p class="text-gray-500 italic">Aucune biographie n'a encore été ajoutée.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        const bioText = document.getElementById("bio-text");
+        const toggleBtn = document.getElementById("toggle-bio");
+
+        if (toggleBtn) {
+            toggleBtn.addEventListener("click", () => {
+                const isExpanded = bioText.style.webkitLineClamp === "unset";
+
+                if (isExpanded) {
+                    // Réduire
+                    bioText.style.webkitLineClamp = "3";
+                    toggleBtn.textContent = "Voir plus";
+                } else {
+                    // Développer
+                    bioText.style.webkitLineClamp = "unset";
+                    toggleBtn.textContent = "Voir moins";
+                }
+            });
+        }
+    </script>
+
+    <!-- Stats -->
+    <div class="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+
+        <!-- Articles ajoutés -->
+        <div class="bg-black/20 rounded-xl p-4 border border-white/5 text-center hover:bg-black/30 transition-colors">
+            <div class="text-3xl font-bold text-lightSkyBlue mb-1">{{ user.items|length }}</div>
+            <div class="text-gray-400 text-sm uppercase tracking-wider">Articles ajoutés</div>
+        </div>
+
+        <!-- Membre depuis -->
+        <div class="bg-black/20 rounded-xl p-4 border border-white/5 text-center hover:bg-black/30 transition-colors">
+            <div class="text-3xl font-bold text-pinkMagenta mb-1">{{ user.created_at.strftime('%Y') }}</div>
+            <div class="text-gray-400 text-sm uppercase tracking-wider">Membre depuis</div>
+        </div>
+
+        <!-- Dernière connexion -->
+        <div class="bg-black/20 rounded-xl p-4 border border-white/5 text-center hover:bg-black/30 transition-colors">
+            <div class="text-lg font-bold text-aquaTeal mb-1 flex items-center justify-center h-[36px]">
+                {% if user.last_login %}
+                {% set pk = pytz.timezone('Asia/Karachi') %}
+                {% set local_time = user.last_login.replace(tzinfo=pytz.UTC).astimezone(pk) %}
+                {{ local_time.strftime('%d %b %Y à %H:%M') }}
+                {% else %}
+                –
+                {% endif %}
+            </div>
+            <div class="text-gray-400 text-sm uppercase tracking-wider">Dernière connexion</div>
+        </div>
+
+    </div>
+
+    <!-- Actions -->
+    <div class="relative z-10 flex flex-wrap gap-4 justify-center md:justify-start">
+        <a href="{{ url_for('profile.edit_profile') }}"
+            class="px-6 py-2.5 bg-gradient-to-r from-vividOrange to-coralRed text-white font-semibold rounded-full hover:shadow-[0_0_15px_rgba(235,95,52,0.4)] hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
+            <i class="bi bi-pencil-square"></i> Modifier le profil
+        </a>
+
+        <a href="{{ url_for('profile.change_password') }}"
+            class="px-6 py-2.5 bg-white/10 border border-white/20 text-white font-semibold rounded-full hover:bg-white/20 hover:border-white/40 transition-all duration-300 flex items-center gap-2 backdrop-blur-sm">
+            <i class="bi bi-key"></i> Changer le mot de passe
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

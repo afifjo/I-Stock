@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}Rapport global{% endblock %}
+
+{% block content %}
+
+<h1 class="text-3xl font-bold mb-6 text-lightSkyBlue">Rapport global d'inventaire</h1>
+
+<div class="max-w-3xl mx-auto bg-darkIndigo rounded-2xl shadow-lg border border-gray-700 p-6 text-sm text-gray-200">
+    <p class="mb-4 text-gray-300">
+        Sélectionnez les informations à inclure dans le rapport et le format d'export souhaité.
+    </p>
+
+    <form method="POST" class="space-y-6">
+        {{ csrf_token() if csrf_token is defined }}
+
+        <!-- Filtres -->
+        <div>
+            <h2 class="text-lg font-semibold text-lightSkyBlue mb-2">Filtres</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <!-- Catégorie -->
+                <div>
+                    <label class="block mb-1 text-gray-300">Catégorie</label>
+                    <select name="category"
+                        class="w-full bg-black/30 border border-white/10 text-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-lightSkyBlue focus:ring-1 focus:ring-lightSkyBlue">
+                        <option value="">Toutes</option>
+                        {% for c in categories %}
+                        <option value="{{ c }}">{{ c }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Membre du personnel -->
+                <div>
+                    <label class="block mb-1 text-gray-300">Membre du personnel (assigné à)</label>
+                    <select name="staff"
+                        class="w-full bg-black/30 border border-white/10 text-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-lightSkyBlue focus:ring-1 focus:ring-lightSkyBlue">
+                        <option value="">Tous</option>
+                        {% for s in staff_names %}
+                        <option value="{{ s }}">{{ s }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Date de création - de -->
+                <div>
+                    <label class="block mb-1 text-gray-300">Date de création (à partir de)</label>
+                    <input type="date" name="date_from"
+                        class="w-full bg-black/30 border border-white/10 text-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-lightSkyBlue focus:ring-1 focus:ring-lightSkyBlue">
+                </div>
+
+                <!-- Date de création - jusqu'à -->
+                <div>
+                    <label class="block mb-1 text-gray-300">Date de création (jusqu'au)</label>
+                    <input type="date" name="date_to"
+                        class="w-full bg-black/30 border border-white/10 text-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-lightSkyBlue focus:ring-1 focus:ring-lightSkyBlue">
+                </div>
+            </div>
+        </div>
+
+        <!-- Colonnes -->
+        <div>
+            <h2 class="text-lg font-semibold text-lightSkyBlue mb-2">Colonnes à inclure</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+                <label class="inline-flex items-center gap-2">
+                    <input type="checkbox" name="columns" value="name" class="rounded" checked>
+                    <span>Article</span>
+                </label>
+                <label class="inline-flex items-center gap-2">
+                    <input type="checkbox" name="columns" value="category" class="rounded" checked>
+                    <span>Catégorie</span>
+                </label>
+                <label class="inline-flex items-center gap-2">
+                    <input type="checkbox" name="columns" value="quantity" class="rounded" checked>
+                    <span>Quantité</span>
+                </label>
+                <label class="inline-flex items-center gap-2">
+                    <input type="checkbox" name="columns" value="assigned_to" class="rounded">
+                    <span>Assigné à</span>
+                </label>
+                <label class="inline-flex items-center gap-2">
+                    <input type="checkbox" name="columns" value="serial_number" class="rounded">
+                    <span>Numéro de série</span>
+                </label>
+                <label class="inline-flex items-center gap-2">
+                    <input type="checkbox" name="columns" value="reference_code" class="rounded">
+                    <span>Code de référence</span>
+                </label>
+                <label class="inline-flex items-center gap-2">
+                    <input type="checkbox" name="columns" value="description" class="rounded">
+                    <span>Description</span>
+                </label>
+                <label class="inline-flex items-center gap-2">
+                    <input type="checkbox" name="columns" value="assigned_date" class="rounded">
+                    <span>Date d'affectation</span>
+                </label>
+                <label class="inline-flex items-center gap-2">
+                    <input type="checkbox" name="columns" value="created_at" class="rounded">
+                    <span>Date de création</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Format -->
+        <div>
+            <h2 class="text-lg font-semibold text-lightSkyBlue mb-2">Format du rapport</h2>
+            <div class="flex flex-wrap gap-4 text-sm">
+                <label class="inline-flex items-center gap-2">
+                    <input type="radio" name="format" value="excel" class="rounded" checked>
+                    <span>Excel (XLSX)</span>
+                </label>
+                <label class="inline-flex items-center gap-2">
+                    <input type="radio" name="format" value="pdf" class="rounded">
+                    <span>PDF</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Bouton -->
+        <div class="pt-2">
+            <button type="submit"
+                class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-lightSkyBlue to-blue-500 text-white font-semibold rounded-full hover:shadow-[0_0_20px_rgba(92,153,206,0.5)] hover:-translate-y-0.5 transition-all duration-300">
+                <i class="bi bi-file-earmark-arrow-down"></i> Générer le rapport
+            </button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

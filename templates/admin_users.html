@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block title %}Panneau d'administration - Gestion des utilisateurs{% endblock %}
+
+{% block content %}
+
+<div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold text-lightSkyBlue">Panneau d'administration : validations en attente</h1>
+</div>
+
+<div class="overflow-x-auto bg-darkIndigo rounded-xl shadow-lg border border-gray-700">
+    <table class="w-full text-left border-collapse text-gray-200">
+        <thead class="bg-deepNavy text-aquaTeal border-b border-gray-700">
+            <tr>
+                <th class="px-6 py-4 font-semibold text-sm">Nom d'utilisateur</th>
+                <th class="px-6 py-4 font-semibold text-sm">Email</th>
+                <th class="px-6 py-4 font-semibold text-sm">Rôle</th>
+                <th class="px-6 py-4 font-semibold text-sm">Inscrit le</th>
+                <th class="px-6 py-4 font-semibold text-sm text-right">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for user in pending_users %}
+            <tr class="border-b border-gray-700 hover:bg-deepNavy transition-all">
+
+                <td class="px-6 py-4 font-medium text-lightSkyBlue">
+                    {{ user.username }}
+                </td>
+
+                <td class="px-6 py-4 text-sm text-gray-300">
+                    {{ user.email }}
+                </td>
+
+                <td class="px-6 py-4 text-sm text-lightLavender capitalize">
+                    {{ user.role }}
+                </td>
+
+                <td class="px-6 py-4 text-sm text-gray-400">
+                    {{ user.created_at.strftime('%Y-%m-%d %H:%M') }}
+                </td>
+
+                <td class="px-6 py-4 text-right">
+                    <div class="inline-flex items-center gap-2">
+
+                        <!-- Approve Form -->
+                        <form method="POST" action="{{ url_for('main.approve_user', user_id=user.id) }}" class="inline">
+                            <button type="submit"
+                                class="bg-tealGreen text-white px-3 py-1 rounded hover:bg-aquaTeal transition text-sm shadow-md"
+                                title="Approuver">
+                                Approuver
+                            </button>
+                        </form>
+
+                        <!-- Reject Form -->
+                        <form method="POST" action="{{ url_for('main.reject_user', user_id=user.id) }}" class="inline">
+                            <button type="button"
+                                onclick="if(confirm('Refuser et supprimer cet utilisateur ?')) this.form.submit();"
+                                class="bg-coralRed text-white px-3 py-1 rounded hover:bg-hotPink transition text-sm shadow-md"
+                                title="Refuser">
+                                Refuser
+                            </button>
+                        </form>
+
+                    </div>
+                </td>
+
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                    Aucune inscription d'utilisateur en attente.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="flex justify-between items-center mb-8 mt-12">
+    <h1 class="text-3xl font-bold text-lightSkyBlue">Comptes enregistrés</h1>
+</div>
+
+<div class="overflow-x-auto bg-darkIndigo rounded-xl shadow-lg border border-gray-700">
+    <table class="w-full text-left border-collapse text-gray-200">
+        <thead class="bg-deepNavy text-aquaTeal border-b border-gray-700">
+            <tr>
+                <th class="px-6 py-4 font-semibold text-sm">Nom d'utilisateur</th>
+                <th class="px-6 py-4 font-semibold text-sm">Email</th>
+                <th class="px-6 py-4 font-semibold text-sm">Rôle</th>
+                <th class="px-6 py-4 font-semibold text-sm">Inscrit le</th>
+                <th class="px-6 py-4 font-semibold text-sm">Dernière connexion</th>
+                <th class="px-6 py-4 font-semibold text-sm text-right">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for user in approved_users %}
+            <tr class="border-b border-gray-700 hover:bg-deepNavy transition-all">
+
+                <td class="px-6 py-4 font-medium text-lightSkyBlue">
+                    {{ user.username }}
+                </td>
+
+                <td class="px-6 py-4 text-sm text-gray-300">
+                    {{ user.email }}
+                </td>
+
+                <td class="px-6 py-4 text-sm text-lightLavender capitalize">
+                    {{ user.role }}
+                </td>
+
+                <td class="px-6 py-4 text-sm text-gray-400">
+                    {{ user.created_at.strftime('%Y-%m-%d %H:%M') }}
+                </td>
+
+                <td class="px-6 py-4 text-sm text-gray-400">
+                    {% if user.last_login %}
+                    {{ user.last_login.strftime('%Y-%m-%d %H:%M') }}
+                    {% else %}
+                    <span class="text-gray-500">Jamais</span>
+                    {% endif %}
+                </td>
+
+                <td class="px-6 py-4 text-right">
+                    <div class="inline-flex items-center gap-2">
+
+                        <!-- Delete Form -->
+                        {% if user.id != current_user.id %}
+                        <form method="POST" action="{{ url_for('main.reject_user', user_id=user.id) }}" class="inline">
+                            <button type="button"
+                                onclick="if(confirm('Supprimer définitivement cet utilisateur ?')) this.form.submit();"
+                                class="text-coralRed hover:text-hotPink transition" title="Supprimer l'utilisateur">
+                                <i class="bi bi-trash3 text-lg pointer-events-none"></i>
+                            </button>
+                        </form>
+                        {% else %}
+                        <span class="text-xs text-gray-500 italic">Utilisateur actuel</span>
+                        {% endif %}
+
+                    </div>
+                </td>
+
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                    Aucun utilisateur enregistré.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
