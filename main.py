@@ -1,6 +1,7 @@
 import os
 import csv
 import pandas as pd
+from sqlalchemy import or_
 from io import BytesIO, StringIO
 from datetime import datetime
 from werkzeug.utils import secure_filename
@@ -222,14 +223,26 @@ def search():
             (object,),
             {"items": [], "has_prev": False, "has_next": False, "page": 1, "pages": 1},
         )()
-        return render_template("search.html", items=empty, q=None)
+        return render_template("search.html", items=empty, staff_members=[], q=None)
 
+    # Search Items
     items = Item.query.filter(
         Item.user_id == current_user.id,
         Item.name.ilike(f"%{q}%")
     ).paginate(page=page, per_page=6, error_out=False)
+    
+    # Search Staff
+    staff_members = Staff.query.filter(
+        Staff.user_id == current_user.id,
+        or_(
+            Staff.name.ilike(f"%{q}%"),
+            Staff.email.ilike(f"%{q}%"),
+            Staff.position.ilike(f"%{q}%"),
+            Staff.department.ilike(f"%{q}%")
+        )
+    ).all()
 
-    return render_template("search.html", items=items, q=q)
+    return render_template("search.html", items=items, staff_members=staff_members, q=q)
 
 
 # -----------------------------

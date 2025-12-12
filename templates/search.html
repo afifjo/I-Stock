@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<h1 class="text-3xl font-bold text-lightSkyBlue mb-8">Rechercher des articles</h1>
+<h1 class="text-3xl font-bold text-lightSkyBlue mb-8">Rechercher</h1>
 
 <!-- Formulaire de recherche -->
 <form method="get" action="{{ url_for('main.search') }}" class="flex gap-4 p-1">
@@ -11,7 +11,7 @@
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <i class="bi bi-search text-gray-500 group-focus-within:text-lightSkyBlue transition-colors"></i>
         </div>
-        <input name="q" value="{{ q or '' }}" placeholder="Rechercher un article par nom..."
+        <input name="q" value="{{ q or '' }}" placeholder="Rechercher par nom, article, email..."
             class="w-full pl-10 pr-4 py-3 rounded-xl bg-deepNavy border border-gray-700 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-lightSkyBlue focus:ring-1 focus:ring-lightSkyBlue transition-all duration-300">
     </div>
     <button
@@ -36,79 +36,127 @@
 
         {% else %}
 
-        {% if items.items %}
-        <!-- Résultats trouvés -->
-        <div class="grid grid-cols-1 gap-4">
-
-            {% for item in items.items %}
-            <div
-                class="p-6 bg-darkIndigo/50 backdrop-blur-md rounded-xl shadow-lg border border-gray-700/50 hover:bg-white/5 transition-all duration-300 group">
-
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h3 class="font-semibold text-xl mb-1">
-                            <a href="{{ url_for('main.view', item_id=item.id) }}"
-                                class="text-lightSkyBlue hover:text-white transition-colors">
-                                {{ item.name }}
-                            </a>
-                        </h3>
-
-                        <!-- FIXED DESCRIPTION CLAMP -->
-                        <p class="text-gray-400 text-sm overflow-hidden text-ellipsis whitespace-normal mb-3"
-                            style="display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; max-width:100%;">
-                            {{ item.description }}
-                        </p>
-                    </div>
-                    <span
-                        class="bg-deepNavy px-3 py-1 rounded-full text-xs font-mono text-aquaTeal border border-aquaTeal/20">
-                        x{{ item.quantity }}
-                    </span>
-                </div>
-
-                <div class="mt-4 flex items-center gap-4 text-xs text-gray-500 uppercase tracking-wider">
-                    <span class="flex items-center gap-1">
-                        <i class="bi bi-tag-fill"></i> {{ item.category or 'Aucune catégorie' }}
-                    </span>
-                </div>
-
-            </div>
-            {% endfor %}
-
-        </div>
-
-        <!-- Pagination -->
-        <div class="flex justify-center items-center gap-4 mt-8 text-gray-400">
-            {% if items.has_prev %}
-            <a href="{{ url_for('main.search', q=q, page=items.prev_num) }}"
-                class="px-4 py-2 bg-deepNavy rounded-lg hover:bg-lightSkyBlue hover:text-white transition-colors">
-                Précédent
-            </a>
-            {% else %}
-            <span class="px-4 py-2 bg-white/5 rounded-lg opacity-50 cursor-not-allowed">Précédent</span>
-            {% endif %}
-
-            <span class="font-mono text-lightSkyBlue">Page {{ items.page }} / {{ items.pages }}</span>
-
-            {% if items.has_next %}
-            <a href="{{ url_for('main.search', q=q, page=items.next_num) }}"
-                class="px-4 py-2 bg-deepNavy rounded-lg hover:bg-lightSkyBlue hover:text-white transition-colors">
-                Suivant
-            </a>
-            {% else %}
-            <span class="px-4 py-2 bg-white/5 rounded-lg opacity-50 cursor-not-allowed">Suivant</span>
-            {% endif %}
-        </div>
-
-        {% else %}
-
+        {% if not items.items and not staff_members %}
         <!-- Aucun résultat -->
         <div class="p-8 bg-darkIndigo/50 backdrop-blur-md rounded-xl shadow-lg border border-red-500/20 text-center">
             <i class="bi bi-emoji-frown text-4xl text-gray-500 mb-3 block"></i>
             <p class="text-gray-300 text-lg">Aucun résultat trouvé pour <strong class="text-lightSkyBlue">{{ q
                     }}</strong>.</p>
         </div>
-
         {% endif %}
+
+        <!-- Résultats Personnel -->
+        {% if staff_members %}
+        <div class="mb-10">
+            <h2 class="text-xl font-bold text-lightSkyBlue mb-4 flex items-center gap-2">
+                <i class="bi bi-people-fill"></i> Personnel
+            </h2>
+            <div class="grid grid-cols-1 gap-4">
+                {% for staff in staff_members %}
+                <div
+                    class="p-6 bg-darkIndigo/50 backdrop-blur-md rounded-xl shadow-lg border border-gray-700/50 hover:bg-white/5 transition-all duration-300 group flex justify-between items-center">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="w-12 h-12 rounded-full bg-gradient-to-br from-lightSkyBlue to-blue-500 flex items-center justify-center text-white font-bold text-lg shadow-md">
+                            {{ staff.name[:2].upper() }}
+                        </div>
+                        <div>
+                            <h3
+                                class="font-semibold text-lg text-white group-hover:text-lightSkyBlue transition-colors">
+                                <a href="{{ url_for('main.edit_staff', staff_id=staff.id) }}">{{ staff.name }}</a>
+                            </h3>
+                            <div class="flex flex-col text-sm text-gray-400">
+                                <span>{{ staff.position or 'Poste non défini' }}</span>
+                                <span class="text-xs opacity-75">{{ staff.department or 'Département inconnu' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right text-sm text-gray-500">
+                        {% if staff.email %}
+                        <div class="flex items-center gap-2 justify-end text-aquaTeal mb-1">
+                            <i class="bi bi-envelope"></i> {{ staff.email }}
+                        </div>
+                        {% endif %}
+                        {% if staff.phone %}
+                        <div class="flex items-center gap-2 justify-end text-gray-400">
+                            <i class="bi bi-telephone"></i> {{ staff.phone }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Résultats Articles -->
+        {% if items.items %}
+        <div>
+            <h2 class="text-xl font-bold text-lightSkyBlue mb-4 flex items-center gap-2">
+                <i class="bi bi-box-seam-fill"></i> Articles
+            </h2>
+            <div class="grid grid-cols-1 gap-4">
+
+                {% for item in items.items %}
+                <div
+                    class="p-6 bg-darkIndigo/50 backdrop-blur-md rounded-xl shadow-lg border border-gray-700/50 hover:bg-white/5 transition-all duration-300 group">
+
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-semibold text-xl mb-1">
+                                <a href="{{ url_for('main.view', item_id=item.id) }}"
+                                    class="text-lightSkyBlue hover:text-white transition-colors">
+                                    {{ item.name }}
+                                </a>
+                            </h3>
+
+                            <p class="text-gray-400 text-sm overflow-hidden text-ellipsis whitespace-normal mb-3"
+                                style="display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; max-width:100%;">
+                                {{ item.description }}
+                            </p>
+                        </div>
+                        <span
+                            class="bg-deepNavy px-3 py-1 rounded-full text-xs font-mono text-aquaTeal border border-aquaTeal/20">
+                            x{{ item.quantity }}
+                        </span>
+                    </div>
+
+                    <div class="mt-4 flex items-center gap-4 text-xs text-gray-500 uppercase tracking-wider">
+                        <span class="flex items-center gap-1">
+                            <i class="bi bi-tag-fill"></i> {{ item.category or 'Aucune catégorie' }}
+                        </span>
+                    </div>
+
+                </div>
+                {% endfor %}
+
+            </div>
+
+            <!-- Pagination (Items only) -->
+            <div class="flex justify-center items-center gap-4 mt-8 text-gray-400">
+                {% if items.has_prev %}
+                <a href="{{ url_for('main.search', q=q, page=items.prev_num) }}"
+                    class="px-4 py-2 bg-deepNavy rounded-lg hover:bg-lightSkyBlue hover:text-white transition-colors">
+                    Précédent
+                </a>
+                {% else %}
+                <span class="px-4 py-2 bg-white/5 rounded-lg opacity-50 cursor-not-allowed">Précédent</span>
+                {% endif %}
+
+                <span class="font-mono text-lightSkyBlue">Page {{ items.page }} / {{ items.pages }}</span>
+
+                {% if items.has_next %}
+                <a href="{{ url_for('main.search', q=q, page=items.next_num) }}"
+                    class="px-4 py-2 bg-deepNavy rounded-lg hover:bg-lightSkyBlue hover:text-white transition-colors">
+                    Suivant
+                </a>
+                {% else %}
+                <span class="px-4 py-2 bg-white/5 rounded-lg opacity-50 cursor-not-allowed">Suivant</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
         {% endif %}
 
     </div>
@@ -121,8 +169,8 @@
             </h3>
             <ul class="text-gray-400 text-sm space-y-3 leading-relaxed list-disc list-inside marker:text-lightSkyBlue">
                 <li>Utilisez des mots-clés simples.</li>
+                <li>Recherche inclut : <strong>Articles</strong> et <strong>Personnel</strong>.</li>
                 <li>Les correspondances partielles sont prises en charge.</li>
-                <li>Évitez les phrases longues — préférez des noms d'articles courts.</li>
                 <li>La recherche n'est pas sensible à la casse.</li>
             </ul>
         </div>
