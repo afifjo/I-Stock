@@ -230,8 +230,44 @@ def global_report():
                 return redirect(url_for('reports.global_report'))
 
     # GET request: Show configuration page
+    # GET request: Show configuration page
     return render_template(
         'reports/global_report.html',
         categories=categories,
         staff_names=staff_names,
+    )
+
+
+@reports_bp.route('/reports/staff/all')
+@login_required
+def export_all_staff_list():
+    """
+    Export ALL staff members to Excel.
+    """
+    staff_members = Staff.query.filter_by(user_id=current_user.id).order_by(Staff.name).all()
+    
+    data = []
+    for s in staff_members:
+        data.append({
+            "Nom": s.name,
+            "Email": s.email,
+            "Téléphone": s.phone,
+            "Fonction": s.position,
+            "Département": s.department
+        })
+    
+    df = pd.DataFrame(data)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Personnel')
+    
+    output.seek(0)
+    
+    return send_file(
+        output,
+        download_name=f"Liste_Personnel_{timestamp}.xlsx",
+        as_attachment=True,
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )

@@ -6,6 +6,11 @@
 <div class="flex justify-between items-center mb-8">
     <h1 class="text-3xl font-bold text-lightSkyBlue">Membres du personnel</h1>
     <div class="flex gap-3">
+        <a href="{{ url_for('reports.export_all_staff_list') }}"
+            class="inline-flex items-center gap-2 px-5 py-2.5 bg-deepNavy border border-lightSkyBlue/30 text-lightSkyBlue font-semibold rounded-full hover:bg-lightSkyBlue hover:text-white transition-all duration-300"
+            title="Télécharger la liste complète (Excel)">
+            <i class="bi bi-download"></i> Exporter
+        </a>
         <a href="{{ url_for('main.import_staff') }}"
             class="inline-flex items-center gap-2 px-5 py-2.5 bg-deepNavy border border-lightSkyBlue/30 text-lightSkyBlue font-semibold rounded-full hover:bg-lightSkyBlue hover:text-white transition-all duration-300">
             <i class="bi bi-file-earmark-arrow-up"></i> Importer
