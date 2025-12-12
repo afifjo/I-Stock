@@ -1,16 +1,23 @@
 
 import os
 import secrets
-import cloudinary
-import cloudinary.uploader
+try:
+    import cloudinary
+    import cloudinary.uploader
+except ImportError:
+    cloudinary = None
+
 from flask import current_app
 from werkzeug.utils import secure_filename
 
 def get_cloudinary_config():
     """
-    Returns True if Cloudinary env vars are set, else False.
+    Returns True if Cloudinary env vars are set AND library is installed, else False.
     Also configures the cloudinary library if keys are present.
     """
+    if not cloudinary:
+        return False
+        
     cloud_name = os.environ.get("CLOUDINARY_CLOUD_NAME")
     api_key = os.environ.get("CLOUDINARY_API_KEY")
     api_secret = os.environ.get("CLOUDINARY_API_SECRET")
