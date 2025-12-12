@@ -44,8 +44,11 @@
         <!-- Submit Button -->
         <button
             class="w-full bg-gradient-to-r from-lightSkyBlue to-blue-600 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
+            {% if is_edit %}
+            Enregistrer les modifications
+            {% else %}
             Ajouter un membre du personnel
-            {{ form.submit.label.text }}
+            {% endif %}
         </button>
 
     </form>
