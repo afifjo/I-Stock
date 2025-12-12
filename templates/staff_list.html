@@ -5,10 +5,16 @@
 
 <div class="flex justify-between items-center mb-8">
     <h1 class="text-3xl font-bold text-lightSkyBlue">Membres du personnel</h1>
-    <a href="{{ url_for('main.add_staff') }}"
-        class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-lightSkyBlue to-blue-500 text-white font-semibold rounded-full hover:shadow-[0_0_20px_rgba(92,153,206,0.5)] hover:-translate-y-0.5 transition-all duration-300 transform">
-        <i class="bi bi-person-plus-fill"></i> Ajouter un membre
-    </a>
+    <div class="flex gap-3">
+        <a href="{{ url_for('main.import_staff') }}"
+            class="inline-flex items-center gap-2 px-5 py-2.5 bg-deepNavy border border-lightSkyBlue/30 text-lightSkyBlue font-semibold rounded-full hover:bg-lightSkyBlue hover:text-white transition-all duration-300">
+            <i class="bi bi-file-earmark-arrow-up"></i> Importer
+        </a>
+        <a href="{{ url_for('main.add_staff') }}"
+            class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-lightSkyBlue to-blue-500 text-white font-semibold rounded-full hover:shadow-[0_0_20px_rgba(92,153,206,0.5)] hover:-translate-y-0.5 transition-all duration-300 transform">
+            <i class="bi bi-person-plus-fill"></i> Ajouter un membre
+        </a>
+    </div>
 </div>
 
 <div class="overflow-x-auto bg-darkIndigo/50 backdrop-blur-sm rounded-xl shadow-lg border border-gray-700/50">

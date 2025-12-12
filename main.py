@@ -1,5 +1,6 @@
 import os
 import csv
+import pandas as pd
 from io import BytesIO, StringIO
 from datetime import datetime
 from werkzeug.utils import secure_filename
@@ -8,6 +9,7 @@ from flask_login import login_required, current_user
 from extensions import db
 from models import Item, Staff, User
 from forms import AddItemForm, EditItemForm, StaffForm
+from storage_utils import save_image_file
 
 
 bp = Blueprint("main", __name__, template_folder="templates")
@@ -22,31 +24,13 @@ def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXT
 
 
-def save_image(file_storage):
-    """
-    Save uploaded image safely.
-    """
-    if not file_storage:
-        return None
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXT
 
-    filename = secure_filename(file_storage.filename)
-    if not filename or not allowed_file(filename):
-        return None
 
-    upload_folder = current_app.config.get(
-        "UPLOAD_FOLDER",
-        os.path.join(current_app.root_path, "static", "uploads")
-    )
-    os.makedirs(upload_folder, exist_ok=True)
+# -----------------------------
+# IMAGE HANDLING MOVED TO storage_utils.py
+# -----------------------------
 
-    basename, ext = os.path.splitext(filename)
-    timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S%f")
-    filename_final = f"{basename}_{timestamp}{ext}"
-
-    path = os.path.join(upload_folder, filename_final)
-    file_storage.save(path)
-
-    return filename_final
 
 
 # -----------------------------
@@ -111,7 +95,7 @@ def add():
             return redirect(url_for("main.add"))
         image_filename = None
         if form.image.data:
-            image_filename = save_image(form.image.data)
+            image_filename = save_image_file(form.image.data, "uploads")
 
         item = Item(
             name=form.name.data,
@@ -169,10 +153,10 @@ def edit(item_id):
                     ),
                     item.image_filename
                 )
-                if os.path.exists(old_path):
+                if os.path.exists(old_path) and not item.image_filename.startswith("http"):
                     os.remove(old_path)
 
-            item.image_filename = save_image(form.image.data)
+            item.image_filename = save_image_file(form.image.data, "uploads")
 
         item.name = form.name.data
         item.description = form.description.data
@@ -205,7 +189,7 @@ def delete(item_id):
         return redirect(url_for("main.index"))
 
     # Delete image file
-    if item.image_filename:
+    if item.image_filename and not item.image_filename.startswith("http"):
         try:
             path = os.path.join(
                 current_app.config.get("UPLOAD_FOLDER", os.path.join(current_app.root_path, "static", "uploads")),
@@ -421,12 +405,67 @@ def edit_staff(staff_id):
 def delete_staff(staff_id):
     staff = Staff.query.get_or_404(staff_id)
     if staff.user_id != current_user.id:
-        abort(403)
-    
-    db.session.delete(staff)
-    db.session.commit()
-    flash("Staff member deleted.", "success")
+        abort(403)    flash("Staff member deleted.", "success")
     return redirect(url_for("main.staff_list"))
+
+
+@bp.route("/staff/import", methods=["GET", "POST"])
+@login_required
+def import_staff():
+    if request.method == "POST":
+        file = request.files.get("file")
+        if not file:
+            flash("Aucun fichier sélectionné", "danger")
+            return redirect(url_for("main.import_staff"))
+        
+        try:
+            # Read Excel file
+            df = pd.read_excel(file)
+            count = 0
+            
+            for index, row in df.iterrows():
+                # Normalize column names handling
+                row = {k.lower(): v for k, v in row.items()}
+                
+                # Check for name (required)
+                name = row.get("name") or row.get("nom")
+                if not name or pd.isna(name):
+                    continue
+                
+                # Get other fields with fallback
+                email = row.get("email")
+                email = str(email) if email and not pd.isna(email) else None
+                
+                phone = row.get("phone") or row.get("téléphone") or row.get("telephone")
+                phone = str(phone) if phone and not pd.isna(phone) else None
+                
+                position = row.get("position") or row.get("fonction")
+                position = str(position) if position and not pd.isna(position) else None
+                
+                department = row.get("department") or row.get("département")
+                department = str(department) if department and not pd.isna(department) else None
+                
+                staff = Staff(
+                    name=str(name),
+                    email=email,
+                    phone=phone,
+                    position=position,
+                    department=department,
+                    user_id=current_user.id
+                )
+                db.session.add(staff)
+                count += 1
+            
+            db.session.commit()
+            flash(f"{count} membres du personnel importés avec succès !", "success")
+            return redirect(url_for("main.staff_list"))
+            
+        except Exception as e:
+            current_app.logger.error(f"Import Error: {e}")
+            flash("Erreur lors de l'importation. Vérifiez le format du fichier Excel.", "danger")
+            return redirect(url_for("main.import_staff"))
+            
+    return render_template("import_staff.html")
 
 
 # -----------------------------
