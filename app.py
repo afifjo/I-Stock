@@ -43,6 +43,11 @@ def create_app(test_config=None):
         with app.app_context():
             db.create_all()
 
+    # Health check endpoint for Koyeb
+    @app.route('/health')
+    def health_check():
+        return {'status': 'healthy'}, 200
+
     return app
 
 
