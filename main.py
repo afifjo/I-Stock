@@ -405,7 +405,11 @@ def edit_staff(staff_id):
 def delete_staff(staff_id):
     staff = Staff.query.get_or_404(staff_id)
     if staff.user_id != current_user.id:
-        abort(403)    flash("Staff member deleted.", "success")
+        abort(403)
+    
+    db.session.delete(staff)
+    db.session.commit()
+    flash("Staff member deleted.", "success")
     return redirect(url_for("main.staff_list"))
 
 
