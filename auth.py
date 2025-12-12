@@ -90,7 +90,11 @@ def register():
         db.session.commit()
 
         # Send credentials email
-        send_credentials_email(new_user, form.password.data)
+        try:
+            send_credentials_email(new_user, form.password.data)
+        except Exception as e:
+            current_app.logger.error(f"Failed to send email: {e}")
+            flash("Account created, but failed to send email credentials.", "warning")
 
         if is_approved:
             flash("Account created! Credentials sent to your email.", "success")
@@ -157,7 +161,11 @@ def reset_password(token):
         # Send new credentials email (optional, but requested "same for changing password")
         # Actually user knows the password they just set, but let's send it as confirmation/record if desired.
         # The request said "same for changing password", which implies sending the new password.
-        send_credentials_email(user, form.password.data)
+        try:
+            send_credentials_email(user, form.password.data)
+        except Exception as e:
+            current_app.logger.error(f"Failed to send email: {e}")
+            flash("Password updated, but failed to send email confirmation.", "warning")
         
         flash("Your password has been updated! You can now log in.", "success")
         return redirect(url_for("auth.login"))
