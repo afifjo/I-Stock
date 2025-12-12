@@ -4,15 +4,23 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
-    SECRET_KEY = "super-secret-key-change-this"
+    SECRET_KEY = os.environ.get('SECRET_KEY', '7tk50zd4sv13x9wytj2q7g9hi0j1d4nr8vzgna20go77k5xmq2x2svyidbeykioi')
 
     # SQLite Database
     # Database Configuration (SQLite Local, PostgreSQL Prod)
     DATABASE_PATH = os.path.join(BASE_DIR, "inventory.db")
     # Render provides 'DATABASE_URL', but SQLAlchemy requires 'postgresql://', not 'postgres://'
     uri = os.environ.get("DATABASE_URL", "sqlite:///" + DATABASE_PATH)
-    if uri and uri.startswith("postgres://"):
-        uri = uri.replace("postgres://", "postgresql://", 1)
+    if uri and uri.startswith("postgres"):
+        if uri.startswith("postgres://"):
+            uri = uri.replace("postgres://", "postgresql://", 1)
+        
+        # Ensure SSL mode is enabled for Koyeb/Neon
+        if "sslmode" not in uri:
+            if "?" in uri:
+                uri += "&sslmode=require"
+            else:
+                uri += "?sslmode=require"
         
     SQLALCHEMY_DATABASE_URI = uri
     SQLALCHEMY_TRACK_MODIFICATIONS = False
